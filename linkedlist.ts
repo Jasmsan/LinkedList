@@ -12,21 +12,27 @@ class LinkedList {
     }
 
     prepend(data: any) {
-        const nuevo = new ListNode(data, null);
+        let newNode = new ListNode(data, this.head);
         if (!this.head){
-            this.head = nuevo;
+            this.head = newNode;
             this.tail = this.head;
         } else {
-            nuevo.next = this.head;
-            this.head = nuevo;
+            this.head = newNode;
         }
         this.counter++;
     }
 
     append(data: any){
-        const nuevo = new ListNode(data, null);
-        this.tail.next = nuevo;
-        this.tail = nuevo;
+        let newNode = new ListNode(data, null);
+
+        if (!this.head) {
+            this.head = newNode;
+        }
+
+        if (this.tail) {
+            this.tail.next = newNode;
+        }
+        this.tail = newNode;
         this.counter++;
     }
 
@@ -46,12 +52,12 @@ class LinkedList {
         while(current){
             pos += 1;
             if(current.data === ele){
-                return `Value ${ele} found at position: ${pos}`;
+                return current;
             } else {
                 current = current.next;
             }
         }
-        return `Value ${ele} not found`;
+        return null;
     }
 
     deleteFromHead() {
@@ -60,7 +66,7 @@ class LinkedList {
                 this.head = this.head.next;
                 this.counter--;
         } else {
-            ListaEnlazada = new LinkedList();
+            this.reset();
         }    
 
     }
@@ -78,7 +84,7 @@ class LinkedList {
                 this.counter--;
 
         } else {
-            ListaEnlazada = new LinkedList();
+            this.reset();
         }  
     }
 
@@ -86,24 +92,79 @@ class LinkedList {
         
         while (this.head && this.head.data === value && this.head != this.tail) {
             this.head = this.head.next;
+            this.counter--;
         }
         let current = this.head;
 
         if (this.head != this.tail && current.next) {
 
-            while (current.next && current.next.data === value) {
-                current.next = current.next.next;
+            while (current.next) {
+                
+                if(current.next.data === value) {
+                    current.next = current.next.next;
+                    this.counter--;
+                } else {
+                    current = current.next;
+                }
+                               
             }
+
             if (this.tail.data === value) {
                 this.tail = current;
             }
+            
         }
+            
 
         if (this.head === this.tail && this.head.data === value) {
-            ListaEnlazada = new LinkedList();
+            this.reset();
         }
 
 
+    }
+
+    insertAfter(value: any, after: any) {
+        let element = this.searchElement(after);
+        
+        if (element) {
+            let newNode = new ListNode(value, element.next);
+            element.next = newNode;
+            this.counter++;
+            if(!newNode.next) {
+                this.tail = newNode;
+            }
+        } else {
+            return console.log(`Element ${after} not found in list!`);
+        }
+    }
+
+    insertBefore(value: any, before: any) {
+        let element = this.searchElement(before);
+        
+        if (element && element === this.head) {
+            this.prepend(value);
+        } else if (element) {
+            let current = this.head;
+            
+            while(current.next) {
+                if (current.next.data === before) {
+                    current.next = new ListNode(value, element);
+                    this.counter++;
+                    return;
+                } else {
+                    current = current.next;
+                }
+            }
+
+        } else {
+            return console.log(`Element ${before} not found in list!`);
+        }
+    }
+
+    reset(): void {
+        this.head = null;
+        this.tail = null;
+        this.counter = 0;
     }
 
 
@@ -113,49 +174,11 @@ class LinkedList {
 class ListNode {
     
     data: any;
-    next: ListNode;
+    next: ListNode | null;
 
-    constructor(data: any, next: ListNode) {
+    constructor(data: any, next: ListNode | null) {
         this.data = data;
         this.next = next
     }
 
 }
-
-var ListaEnlazada = new LinkedList();
-
-ListaEnlazada.prepend(10);
-ListaEnlazada.prepend(20);
-ListaEnlazada.prepend(30);
-ListaEnlazada.append(40);
-ListaEnlazada.append(50);
-ListaEnlazada.append(60);
-
-console.log(ListaEnlazada.toArray());
-//console.log(ListaEnlazada.counter);
-//console.log(ListaEnlazada);
-//console.log(ListaEnlazada.searchElement(100));
-//console.log(ListaEnlazada.searchElement(50));
-
-ListaEnlazada.deleteFromHead();
-ListaEnlazada.deleteFromHead();
-ListaEnlazada.deleteFromHead();
-ListaEnlazada.deleteFromTail();
-ListaEnlazada.deleteFromTail();
-console.log(ListaEnlazada.toArray());
-//console.log(ListaEnlazada.counter);
-//console.log(ListaEnlazada);
-
-ListaEnlazada.prepend(30);
-ListaEnlazada.append(40);
-
-console.log(ListaEnlazada.toArray());
-
-ListaEnlazada.deleteValue(40);
-
-console.log(ListaEnlazada.toArray());
-
-ListaEnlazada.deleteValue(30);
-
-console.log(ListaEnlazada.toArray());
-//console.log(ListaEnlazada.tail);
